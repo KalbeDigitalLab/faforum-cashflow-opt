@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cash Flow Simulation Results</h1>
+        </header>
+
+        <!-- Table Section -->
+        <section class="table-section">
+            <h2>Simulation Data Table</h2>
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Time Period</th>
+                        <th onclick="sortTable(1)">Sales Volume</th>
+                        <th onclick="sortTable(2)">Revenue</th>
+                        <th onclick="sortTable(3)">Variable Costs</th>
+                        <th onclick="sortTable(4)">Inventory Level</th>
+                        <th onclick="sortTable(5)">Accounts Receivable</th>
+                        <th onclick="sortTable(6)">Accounts Payable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table_data %}
+                    <tr>
+                        <td>{{ row['Time Period'] }}</td>
+                        <td>{{ row['Sales Volume'] }}</td>
+                        <td>{{ row['Revenue'] }}</td>
+                        <td>{{ row['Variable Costs'] }}</td>
+                        <td>{{ row['Inventory Level'] }}</td>
+                        <td>{{ row['Accounts Receivable'] }}</td>
+                        <td>{{ row['Accounts Payable'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="chart-section">
+            <h2>Simulation Charts</h2>
+            <canvas id="cashChart"></canvas>
+            <canvas id="metricsChart"></canvas>
+        </section>
+    </div>
+
+    <script src="/static/js/scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+jinja2
+pandas
+numpy
+matplotlib
+plotly
+pynetlogo
+tabulate
+nbformat
+mistune
+pandocfilters
+python-multipart

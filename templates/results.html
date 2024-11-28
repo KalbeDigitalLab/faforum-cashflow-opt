@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Simulation Results</h1>
+        </header>
+
+        <!-- Table Section -->
+        <section class="table-section">
+            <h2>Simulation Data Table</h2>
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Time Period</th>
+                        <th>Sales Volume</th>
+                        <th>Revenue</th>
+                        <th>Variable Costs</th>
+                        <th>Inventory Level</th>
+                        <th>Accounts Receivable</th>
+                        <th>Accounts Payable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in table_data %}
+                    <tr>
+                        <td>{{ row['Time Period'] }}</td>
+                        <td>{{ row['Sales Volume'] }}</td>
+                        <td>{{ row['Revenue'] }}</td>
+                        <td>{{ row['Variable Costs'] }}</td>
+                        <td>{{ row['Inventory Level'] }}</td>
+                        <td>{{ row['Accounts Receivable'] }}</td>
+                        <td>{{ row['Accounts Payable'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="chart-section">
+            <h2>Simulation Charts</h2>
+            <canvas id="cashChart"></canvas>
+            <canvas id="metricsChart"></canvas>
+        </section>
+    </div>
+
+    <script>
+        // Data from server rendered as a JavaScript variable
+        const tableData = {{ table_data | tojson }};
+
+        // Prepare chart data
+        const labels = tableData.map(row => row["Time Period"]);
+        const salesVolume = tableData.map(row => row["Sales Volume"]);
+        const revenue = tableData.map(row => row["Revenue"]);
+        const variableCosts = tableData.map(row => row["Variable Costs"]);
+        const inventoryLevel = tableData.map(row => row["Inventory Level"]);
+
+        // Chart 1: Revenue and Variable Costs Over Time
+        const ctx1 = document.getElementById('cashChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Revenue',
+                        data: revenue,
+                        borderColor: '#40916c',
+                        fill: false,
+                        tension: 0.3,
+                    },
+                    {
+                        label: 'Variable Costs',
+                        data: variableCosts,
+                        borderColor: '#e3911e',
+                        fill: false,
+                        tension: 0.3,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                }
+            }
+        });
+
+        // Chart 2: Sales Volume and Inventory Level Over Time
+        const ctx2 = document.getElementById('metricsChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Sales Volume',
+                        data: salesVolume,
+                        backgroundColor: '#40916c',
+                    },
+                    {
+                        label: 'Inventory Level',
+                        data: inventoryLevel,
+                        backgroundColor: '#e3911e',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
