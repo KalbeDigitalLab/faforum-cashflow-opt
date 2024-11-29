@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #f7fdf7;
@@ -6,31 +7,41 @@ body {
     padding: 0;
 }
 
+/* Container Styling */
 .container {
     max-width: 800px;
     margin: 0 auto;
+    margin-top: 2%;
+    margin-bottom: 2%;
     padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px; /* Rounded edges for cleaner look */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for elevation */
 }
 
+/* Header Styling */
 header {
     text-align: center;
     margin-bottom: 20px;
 }
 
-header h1 {
-    font-size: 2em;
+header h1, header h2 {
+    font-size: 1.8em;
     color: #2d6a4f;
 }
 
+/* Form Styling */
 form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 15px; /* Space between form elements */
 }
 
 label {
     font-weight: bold;
     color: #2d6a4f;
+    margin-bottom: 5px;
 }
 
 input, button {
@@ -38,18 +49,28 @@ input, button {
     font-size: 1em;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
 }
 
+/* Button Styling */
 button {
     background-color: #40916c;
     color: white;
     cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 button:hover {
     background-color: #2d6a4f;
+    transform: scale(1.02);
 }
 
+button:active {
+    transform: scale(0.98); /* Slight shrink on click */
+}
+
+/* Table Styling */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -64,5 +85,144 @@ table th, table td {
 
 table th {
     background-color: #40916c;
-    color: #fff;
+    color: white;
+}
+
+/* Control Button Styling */
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* Space between buttons */
+    margin-bottom: 20px;
+}
+
+.controls button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #40916c;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.controls button:hover {
+    background-color: #2d6a4f;
+    transform: scale(1.05); /* Slight hover effect */
+}
+
+.graph-container {
+    display: flex;
+    flex-direction: column; /* Stack graphs vertically */
+    justify-content: center; /* Center-align vertically */
+    align-items: center; /* Center-align horizontally */
+    gap: 20px; /* Add spacing between the graphs */
+    margin-top: 20px;
+}
+
+canvas {
+    width: 90%; /* Make the graphs responsive to container width */
+    max-width: 800px; /* Set a maximum width for the graphs */
+    height: 400px; /* Fixed height for readability */
+    border-radius: 10px; /* Rounded corners for better aesthetics */
+    background-color: #ffffff; /* Ensure a clean graph background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for better contrast */
+}
+
+/* Table Popup Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Dark overlay */
+}
+
+.modal-content {
+    background-color: #ffffff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 60%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: #2d6a4f;
+}
+
+.modal-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.modal-content table th, .modal-content table td {
+    text-align: left;
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.modal-content table tr:hover {
+    background-color: #d8f3dc;
+}
+
+/* Close Button for Modal */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover, .close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+/* Animations */
+@keyframes slide-in {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Add these styles to your styles.css */
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 20px 0;
+}
+
+#resultsTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#resultsTable thead {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+}
+
+#resultsTable th,
+#resultsTable td {
+    padding: 8px;
+    border: 1px solid #ddd;
 }

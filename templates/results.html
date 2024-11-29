@@ -14,113 +14,251 @@
             <h1>Simulation Results</h1>
         </header>
 
-        <!-- Table Section -->
-        <section class="table-section">
-            <h2>Simulation Data Table</h2>
-            <table id="resultsTable">
-                <thead>
-                    <tr>
-                        <th>Time Period</th>
-                        <th>Sales Volume</th>
-                        <th>Revenue</th>
-                        <th>Variable Costs</th>
-                        <th>Inventory Level</th>
-                        <th>Accounts Receivable</th>
-                        <th>Accounts Payable</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in table_data %}
-                    <tr>
-                        <td>{{ row['Time Period'] }}</td>
-                        <td>{{ row['Sales Volume'] }}</td>
-                        <td>{{ row['Revenue'] }}</td>
-                        <td>{{ row['Variable Costs'] }}</td>
-                        <td>{{ row['Inventory Level'] }}</td>
-                        <td>{{ row['Accounts Receivable'] }}</td>
-                        <td>{{ row['Accounts Payable'] }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
+        <!-- Control Buttons -->
+        <div class="controls">
+            <button onclick="refreshSimulation()">Refresh Simulation</button>
+            <button onclick="showTablePopup()">Show Table</button>
+            <button onclick="saveDataPopup()">Save Data</button>
+        </div>
 
-        <!-- Chart Section -->
-        <section class="chart-section">
-            <h2>Simulation Charts</h2>
-            <canvas id="cashChart"></canvas>
-            <canvas id="metricsChart"></canvas>
-        </section>
+        <!-- Graph Section -->
+        <div class="graph-container">
+            <canvas id="revenueChart"></canvas>
+            <canvas id="salesChart"></canvas>
+            <canvas id="accountsChart"></canvas>
+        </div>
+
+        <!-- Table Popup Modal -->
+        <div id="tablePopup" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeTablePopup()">&times;</span>
+                <h2>Simulation Data Table</h2>
+                <div class="table-container"
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Time Period</th>
+                                <th>Sales Volume</th>
+                                <th>Revenue</th>
+                                <th>Variable Costs</th>
+                                <th>Inventory Level</th>
+                                <th>Accounts Receivable</th>
+                                <th>Accounts Payable</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody"></tbody>
+                    </table>
+                <div>
+            </div>
+        </div>
+
+        <!-- Save Data Popup Modal -->
+        <div id="savePopup" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeSavePopup()">&times;</span>
+                <h2>Save Data</h2>
+                <form id="saveForm" onsubmit="saveData(event)">
+                    <label for="fileName">Enter File Name:</label>
+                    <input type="text" id="fileName" name="fileName" required>
+                    <button type="submit">Save</button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Data from server rendered as a JavaScript variable
-        const tableData = {{ table_data | tojson }};
-
-        // Prepare chart data
-        const labels = tableData.map(row => row["Time Period"]);
-        const salesVolume = tableData.map(row => row["Sales Volume"]);
-        const revenue = tableData.map(row => row["Revenue"]);
-        const variableCosts = tableData.map(row => row["Variable Costs"]);
-        const inventoryLevel = tableData.map(row => row["Inventory Level"]);
-
-        // Chart 1: Revenue and Variable Costs Over Time
-        const ctx1 = document.getElementById('cashChart').getContext('2d');
-        new Chart(ctx1, {
-            type: 'line',
+        const params = {{ params | tojson }};
+        const ticks = {{ ticks }};
+        const ws = new WebSocket(`ws://${window.location.host}/ws/simulation`);
+        const labels = [];
+        const revenueData = [];
+        const costsData = [];
+        const salesData = [];
+        const inventoryData = [];
+        const receivablesData = [];
+        const payablesData = [];
+        const revenueChart = new Chart(document.getElementById("revenueChart").getContext("2d"), {
+            type: "line",
             data: {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Revenue',
-                        data: revenue,
-                        borderColor: '#40916c',
+                        label: "Revenue",
+                        data: revenueData,
+                        borderColor: "#FFA500",
                         fill: false,
-                        tension: 0.3,
                     },
                     {
-                        label: 'Variable Costs',
-                        data: variableCosts,
-                        borderColor: '#e3911e',
+                        label: "Variable Costs",
+                        data: costsData,
+                        borderColor: "#0000FF",
                         fill: false,
-                        tension: 0.3,
                     }
                 ]
             },
-            options: {
+            options: { 
                 responsive: true,
-                plugins: {
-                    legend: { display: true }
+                scales: {
+                    y: {
+                        title:{
+                            display: true,
+                            text: 'Rupiah (Rp)'
+                        }
+                    },
+                    x: {
+                        title:{
+                            display: true,
+                            text: 'Months'
+                        }
+                    }
                 }
             }
         });
 
-        // Chart 2: Sales Volume and Inventory Level Over Time
-        const ctx2 = document.getElementById('metricsChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'bar',
+        const salesChart = new Chart(document.getElementById("salesChart").getContext("2d"), {
+            type: "line",
             data: {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Sales Volume',
-                        data: salesVolume,
-                        backgroundColor: '#40916c',
+                        label: "Sales Volume",
+                        data: salesData,
+                        borderColor: "#FFA500",
+                        fill: false,
                     },
                     {
-                        label: 'Inventory Level',
-                        data: inventoryLevel,
-                        backgroundColor: '#e3911e',
+                        label: "Inventory Level",
+                        data: inventoryData,
+                        borderColor: "##0000FF",
+                        fill: false,
                     }
                 ]
             },
-            options: {
+            options: { 
                 responsive: true,
-                plugins: {
-                    legend: { display: true }
+                scales: {
+                    y: {
+                        title:{
+                            display: true,
+                            text: 'Units'
+                        }
+                    },
+                    x: {
+                        title:{
+                            display: true,
+                            text: 'Months'
+                        }
+                    }
                 }
             }
         });
+        
+        const accountsChart = new Chart(document.getElementById("accountsChart").getContext("2d"), {
+        type: "line",
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "Accounts Receivable",
+                        data: receivablesData,
+                        borderColor: "#FFA500",
+                        fill: false,
+                    },
+                    {
+                        label: "Accounts Payable",
+                        data: payablesData,
+                        borderColor: "##0000FF",
+                        fill: false,
+                    }
+                ]
+            },
+            options: { 
+                responsive: true,
+                scales: {
+                    y: {
+                        title:{
+                            display: true,
+                            text: 'Rupiah (Rp)'
+                        }
+                    },
+                    x: {
+                        title:{
+                            display: true,
+                            text: 'Months'
+                        }
+                    }
+                }
+            }
+        });
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({ ...params, ticks }));
+        };
+
+        ws.onmessage = (event) => {
+            const tickData = JSON.parse(event.data);
+
+            // Update Charts
+            labels.push(tickData["Time Period"]);
+            revenueData.push(tickData["Revenue"]);
+            costsData.push(tickData["Variable Costs"]);
+            salesData.push(tickData["Sales Volume"]);
+            inventoryData.push(tickData["Inventory Level"]);
+            receivablesData.push(tickData["Accounts Receivable"]);
+            payablesData.push(tickData["Accounts Payable"]);
+            
+            revenueChart.update();
+            salesChart.update();
+            accountsChart.update();
+
+            // Update Table
+            const tableBody = document.getElementById("resultsTableBody");
+            const row = `
+                <tr onclick="selectRow(this)">
+                    <td>${tickData["Time Period"]}</td>
+                    <td>${tickData["Sales Volume"]}</td>
+                    <td>${tickData["Revenue"]}</td>
+                    <td>${tickData["Variable Costs"]}</td>
+                    <td>${tickData["Inventory Level"]}</td>
+                    <td>${tickData["Accounts Receivable"]}</td>
+                    <td>${tickData["Accounts Payable"]}</td>
+                </tr>`;
+            tableBody.innerHTML += row;
+        };
+
+        function refreshSimulation() {
+            location.reload();
+        }
+
+        function showTablePopup() {
+            document.getElementById("tablePopup").style.display = "block";
+        }
+
+        function closeTablePopup() {
+            document.getElementById("tablePopup").style.display = "none";
+        }
+
+        function saveDataPopup() {
+            document.getElementById("savePopup").style.display = "block";
+        }
+
+        function closeSavePopup() {
+            document.getElementById("savePopup").style.display = "none";
+        }
+
+        function saveData(event) {
+            event.preventDefault();
+            const fileName = document.getElementById("fileName").value;
+            const link = document.createElement("a");
+            link.href = "/download";
+            link.download = `${fileName}.csv`;
+            link.click();
+            closeSavePopup();
+        }
+
+        function selectRow(row) {
+            alert(`You selected: ${row.innerText}`);
+        }
     </script>
 </body>
 </html>

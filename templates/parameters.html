@@ -10,10 +10,12 @@
 <body>
     <div class="container">
         <header>
-            <h1>Cash Flow Optimization</h1>
-            <h2 style="text-align: left;">Set Simulation Parameters</h2>
+            <h2>Set Simulation Parameters</h2>
         </header>
         <form action="/run" method="post">
+            <label for="ticks">Number of Months (Ticks):</label>
+            <input type="number" id="ticks" name="ticks" min="1" max="100" value="50" required>
+
             <label for="initial_cash">Initial Cash (Rp):</label>
             <input type="number" id="initial_cash" name="initial_cash" required>
 
@@ -23,13 +25,13 @@
             <label for="cost_per_unit">Cost per Unit (Rp):</label>
             <input type="number" id="cost_per_unit" name="cost_per_unit" required>
 
-            <label for="base_sales_volume">Base Sales Volume:</label>
+            <label for="base_sales_volume">Base Sales Volume (Units):</label>
             <input type="number" id="base_sales_volume" name="base_sales_volume" required>
 
-            <label for="receivable_collection_rate">Receivable Collection Rate (0-1):</label>
+            <label for="receivable_collection_rate">Receivable Collection Rate (0 - 1):</label>
             <input type="number" step="0.01" id="receivable_collection_rate" name="receivable_collection_rate" required>
 
-            <label for="payable_payment_rate">Payable Payment Rate (0-1):</label>
+            <label for="payable_payment_rate">Payable Payment Rate (0 - 1):</label>
             <input type="number" step="0.01" id="payable_payment_rate" name="payable_payment_rate" required>
 
             <button type="submit">Run Simulation</button>
