@@ -61,7 +61,19 @@ async def run(
         "results.html", 
         {"request": request, "params": params, "ticks": ticks}
     )
-
+@app.get("/download")
+async def download_data():
+    try:
+        if not os.path.exists("simulation_results.csv"):
+            raise HTTPException(status_code=404, message="No simulation results found")
+        return FileResponse(
+            "simulation_results.csv",
+            media_type="text/csv",
+            filename="simulation_results.csv"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 @app.websocket("/ws/simulation")
 async def websocket_endpoint(websocket: WebSocket):
     try:

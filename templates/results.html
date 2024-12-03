@@ -33,7 +33,7 @@
             <div class="modal-content">
                 <span class="close" onclick="closeTablePopup()">&times;</span>
                 <h2>Simulation Data Table</h2>
-                <div class="table-container"
+                <div class="table-container">
                     <table id="resultsTable">
                         <thead>
                             <tr>
@@ -239,25 +239,45 @@
         }
 
         function saveDataPopup() {
-            document.getElementById("savePopup").style.display = "block";
+            const savePopup = document.getElementById("savePopup");
+            savePopup.style.display = "block";
+            savePopup.style.zIndex = "1000";
         }
 
         function closeSavePopup() {
             document.getElementById("savePopup").style.display = "none";
         }
 
-        function saveData(event) {
+        async function saveData(event) {
             event.preventDefault();
-            const fileName = document.getElementById("fileName").value;
-            const link = document.createElement("a");
-            link.href = "/download";
-            link.download = `${fileName}.csv`;
-            link.click();
-            closeSavePopup();
+            try{
+                const fileName = document.getElementById("fileName").value;
+                const response = await fetch('/download', {
+                    method: 'GET',
+                });
+            
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+            
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${fileName}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                window.URL.revokeObjectURL(url);
+                link.remove();
+                closeSavePopup();
+            } catch (error) {
+                console.error(error);
+            }
         }
 
         function selectRow(row) {
-            alert(`You selected: ${row.innerText}`);
+            console.error('Error saving file:', error);
+            alert('Failed to save file. Please try again.');
         }
     </script>
 </body>
